@@ -9,7 +9,7 @@ namespace ApiExamples
         public void Example()
         {
             // 1. Get history
-            
+
             // First you need to get the symbol
             Symbol symbol = Core.Instance.Symbols.FirstOrDefault();
 
@@ -20,7 +20,7 @@ namespace ApiExamples
             historicalData = symbol.GetHistory(Period.TICK1, HistoryType.BidAsk, DateTime.Now.AddHours(-1));
 
             // Load 1-minute lasts history for 1 day, and aggregate it with renko algorithm.
-            historicalData = symbol.GetHistory(new HistoryAggregationRenko(Period.MIN1, 10, RenkoStyle.AdvancedClassic, 100, 100, true, true), HistoryType.Last, DateTime.Now.AddDays(-1));
+            historicalData = symbol.GetHistory(new HistoryAggregationRenko(Period.MIN1, symbol.HistoryType, 10, RenkoStyle.AdvancedClassic, 100, 100, true, true), DateTime.Now.AddDays(-1));
 
             // Load ticks history, and aggregate it with points and figures algorithm.
             // If HistoryType is omitted - will be used default history type for symbol.
@@ -28,26 +28,26 @@ namespace ApiExamples
             // ForceReload means that history will be loaded directly from server, local cache will be ignored 
             historicalData = symbol.GetHistory(new HistoryRequestParameters
             {
-                Aggregation = new HistoryAggregationPointsAndFigures(Period.TICK1, 100, 50, PointsAndFiguresStyle.HighLow),
+                Aggregation = new HistoryAggregationPointsAndFigures(Period.TICK1, symbol.HistoryType, 100, 50, PointsAndFiguresStyle.HighLow),
                 FromTime = DateTime.Now.AddDays(-2),
                 ToTime = DateTime.Now.AddDays(-1),
                 ForceReload = true
             });
-            
-            
+
+
             // 2. Events
-            
+
             // Will occur when current bar was updated by new quote
             historicalData.HistoryItemUpdated += this.HistoricalDataOnHistoryItemUpdated;
-            
+
             // Will occur when new history bar was created
             historicalData.NewHistoryItem += this.HistoricalDataOnNewHistoryItem;
-            
-            
-            // 3. Access to histoical data
+
+
+            // 3. Access to historical data
 
             // You can receive any history item by using indexer
-            
+
             // Get current history item
             IHistoryItem historyItem = historicalData[0];
 
